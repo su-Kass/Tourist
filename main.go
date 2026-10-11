@@ -30,23 +30,26 @@ func main() {
 	if termFlag == "-i" || termFlag == "--install" {
 		TalkCat("You have run Tourist with the --install flag!")
 		TalkCat("This installer has programs that will open")
-		TalkCat("When a program opens, make sure to check your terminal for instructions")
+		TalkCat("When a program opens, make sure to check your terminal for instructions\n")
 
-		TalkCat("\nThis is a disclaimer for you to not get confused!")
+		TalkCat("This is a disclaimer for you to not get confused!")
 		TalkCat("Good luck!")
 		MakeOutput("3", "Write \"OK\" to continue to installation:\n")
 		var input string
 		fmt.Scanln(&input)
 		if input != "OK" {
-			TalkCat("incorrect output!")
+			TalkCat("incorrect input!")
 			return
 		}
 		TalkCat("thank you! :3")
 		TalkCat("finding anomaly zip")
 		var anomalyZipName, err1 = SearchForFiletype(anomalyDir, "7z") // file for anomaly
 		var anomalyZip string = filepath.Join(anomalyDir, anomalyZipName)
-		ErrHandle(err1, true)
-
+		ErrHandle(err1, false)
+		if err1 != nil {
+			TalkCat("You forgot to put the files for Anomaly into the folders.")
+			return
+		}
 		TalkCat("finding gamma zip")
 		var gammaZipName, err2 = SearchForFiletype(gammaDir, "7z") // file for gamma if exists
 		var gammaZip string = filepath.Join(gammaDir, gammaZipName)
