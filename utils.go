@@ -54,7 +54,7 @@ func MakeOutput(color string, message string) {
 }
 
 func TalkCat(text string) {
-	MakeOutput("4", "/ᐠ˵- ⩊ -˵マ HEY! ")
+	MakeOutput("4", "/ᐠ˵- ⩊ -˵マ: ")
 	MakeOutput("3", text+"\n")
 }
 

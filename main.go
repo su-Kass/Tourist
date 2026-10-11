@@ -1,6 +1,9 @@
 package main
 
-import "path/filepath"
+import (
+	"fmt"
+	"path/filepath"
+)
 
 //	type UserData struct {
 //		HmeDir	     string
@@ -25,6 +28,20 @@ func main() {
 
 	var rungammaCMD string = commandArgs + " wine " + "\""+filepath.Join(gammaPrefixDir, "ModOrganizer.exe")+"\""
 	if termFlag == "-i" || termFlag == "--install" {
+		TalkCat("You have run Tourist with the --install flag!")
+		TalkCat("This installer has programs that will open")
+		TalkCat("When a program opens, make sure to check your terminal for instructions")
+
+		TalkCat("\nThis is a disclaimer for you to not get confused!")
+		TalkCat("Good luck!")
+		MakeOutput("3", "Write \"OK\" to continue to installation:\n")
+		var input string
+		fmt.Scanln(&input)
+		if input != "OK" {
+			TalkCat("incorrect output!")
+			return
+		}
+		TalkCat("thank you! :3")
 		TalkCat("finding anomaly zip")
 		var anomalyZipName, err1 = SearchForFiletype(anomalyDir, "7z") // file for anomaly
 		var anomalyZip string = filepath.Join(anomalyDir, anomalyZipName)
