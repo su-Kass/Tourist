@@ -53,6 +53,11 @@ func MakeOutput(color string, message string) {
 	os.Stdout.Write([]byte(out))
 }
 
+func TalkCat(text string) {
+	MakeOutput("4", "/ᐠ˵- ⩊ -˵マ HEY! ")
+	MakeOutput("3", text+"\n")
+}
+
 func SearchForFiletype(folder, filetype string) (string, error) {
 	matches, err := filepath.Glob(filepath.Join(folder, "*."+filetype))
 	if err != nil {
@@ -72,12 +77,15 @@ func SearchForFiletype(folder, filetype string) (string, error) {
 //
 // 'Hello World!' <--- argument
 func RunShell(command string) {
-
 	cmd := exec.Command("sh", "-c", command)
 
 	if err := cmd.Run(); err != nil {
 		MakeOutput("1", err.Error()+"\n")
 	}
+
+	MakeOutput("2", "/ᐠ˵- ⩊ -˵マ : ")
+	MakeOutput("3", "Run, "+command)
+	MakeOutput("2", "(˵◝ ⩊  ◜˵マ \n")
 }
 
 // Simply makes a directory, dont question why it exists.

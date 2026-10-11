@@ -23,62 +23,100 @@ func main() {
 	var anomalyDir = filepath.Join(data.CurDir, "Anomaly")
 	var gammaDir = filepath.Join(data.CurDir, "GAMMA")
 
-	if termFlag == "-i" {
-		var exeDir = filepath.Join(data.CurDir, "ModdedExecutables")
-
+	var rungammaCMD string = commandArgs + " wine " + "\""+filepath.Join(gammaPrefixDir, "ModOrganizer.exe")+"\""
+	if termFlag == "-i" || termFlag == "--install" {
+		TalkCat("finding anomaly zip")
 		var anomalyZipName, err1 = SearchForFiletype(anomalyDir, "7z") // file for anomaly
 		var anomalyZip string = filepath.Join(anomalyDir, anomalyZipName)
 		ErrHandle(err1, true)
 
+		TalkCat("finding gamma zip")
 		var gammaZipName, err2 = SearchForFiletype(gammaDir, "7z") // file for gamma if exists
 		var gammaZip string = filepath.Join(gammaDir, gammaZipName)
 		var addGAMMA bool = true
 		ErrHandle(err2, false)
 		if err2 != nil {
 			addGAMMA = false
+			TalkCat("gamma not located, skipping install")
 		}
-
+		TalkCat("searching for modded exes")
+		var exeDir = filepath.Join(data.CurDir, "ModdedExecutables")
 		var exeZipName, err3 = SearchForFiletype(exeDir, "zip")
+		var addExecutables bool = true
 		ErrHandle(err3, true)
-		var exeZip = filepath.Join(exeDir, exeZipName)
-
+		if err3 != nil {
+			TalkCat("modded exes not located, skipping install")
+			addExecutables = false
+		}
+		TalkCat("setting up the wine prefix!")
 		RunShell(commandArgs + "WINEDLLOVERRIDES=\"mscoree,mshtml=\" wineboot") // create prefix
 		// winetricks d3dcompiler_43 d3dcompiler_47 d3dx11_43 d3dx9 d3dx10 dxvk vcrun2022 << alternative command
+		TalkCat("installing the files needed for running S.T.A.L.K.E.R under wine")
 		RunShell(commandArgs + " winetricks -q d3dcompiler_47 d3dx9 d3dx11_43 vcrun2022 dxvk") // setup
 
+		TalkCat("making Anomaly folder")
 		MakeDir(anomalyPrefixDir)
 
+		TalkCat("moving Anomaly to the prefix")
 		MoveFile(anomalyZip, filepath.Join(anomalyPrefixDir, anomalyZipName))
-		MoveFile(exeZip, filepath.Join(anomalyPrefixDir, exeZipName))
 
-		exeZip = filepath.Join(anomalyPrefixDir, exeZipName)
 		anomalyZip = filepath.Join(anomalyPrefixDir, anomalyZipName)
 
+		TalkCat("unzipping anomaly, pls wait")
+		TalkCat("when it is done installing then Anomaly will start")
+		TalkCat("close it when it starts, it will be the DX8 version...")
 		RunShell("7z x '" + anomalyZip + "' -o'" + anomalyPrefixDir + "' -y")
-		RunShell("unzip -o '" + exeZip + "' -d \"" + anomalyPrefixDir + "\"")
 
+		TalkCat("warming up anomaly")
 		RunShell(commandArgs + " wine " + filepath.Join(anomalyPrefixDir, "bin", "AnomalyDX8.exe"))
 
+		if addExecutables {
+			TalkCat("adding the custom executables")
+			var exeZip = filepath.Join(exeDir, exeZipName)
+			MoveFile(exeZip, filepath.Join(anomalyPrefixDir, exeZipName))
+			exeZip = filepath.Join(anomalyPrefixDir, exeZipName)
+			TalkCat("unzipping")
+			RunShell("unzip -o '" + exeZip + "' -d \"" + anomalyPrefixDir + "\"")
+		}
+
 		if addGAMMA {
-			MakeOutput("2", "Adding GAMMA!")
+			TalkCat("adding GAMMA")
 
 			MakeDir(gammaPrefixDir)
+			TalkCat("moving GAMMA to the prefix")
 			MoveFile(gammaZip, filepath.Join(gammaPrefixDir, gammaZipName))
 			gammaZip = filepath.Join(gammaPrefixDir, gammaZipName)
+			TalkCat("extracting GAMMA directly")
+			MakeOutput("1","\n")
+			TalkCat("once gamma installs it will open ModOrganizer so that you can point to the Anomaly directory")
+			TalkCat("close Mod Organizer once you point it to Anomaly")
 			RunShell("7z x '" + gammaZip + "' -o'" + gammaPrefixDir + "' -y")
 
+			TalkCat("MO started")
+			RunShell(rungammaCMD)
+			TalkCat("MO closed")
+
 			var gammaLauncher string = filepath.Join(data.CurDir, "gamma-launcher")
+			TalkCat("downloading gamma-launcher from github")
 			RunShell("curl -fL -o "+gammaLauncher+" \"https://github.com/Mord3rca/gamma-launcher/releases/download/v3.1/gamma-launcher\"")
+			TalkCat("adding gamma to Anomaly using gamma-launcher")
 			RunShell(gammaLauncher+" full-install --anomaly "+"'"+anomalyPrefixDir+"'"+" --gamma "+"'"+gammaPrefixDir+"'")
+			TalkCat("verifying md5")
 			RunShell(gammaLauncher+" check-md5 --gamma "+"'"+gammaPrefixDir+"'")
 		}
+		TalkCat("Welcome to the zone stalker!")
+		TalkCat("run with '-ra' or '--runanomaly' to run anomaly")
+		MakeOutput("1", "\n")
+		if addGAMMA {
+			TalkCat("GAMMA has been installed as well!")
+			TalkCat("run with '-rg' or '--rungamma' to run gamma")
+		}
 	}
-	if termFlag == "-ra" {
+	if termFlag == "-ra" || termFlag == "--runanomaly" {
 		RunShell(commandArgs + " wine " + filepath.Join(anomalyPrefixDir, "AnomalyLauncher.exe"))
 	}
-	if termFlag == "-rg" {
-		var runCMD string = commandArgs + " wine " + "\""+filepath.Join(gammaPrefixDir, "ModOrganizer.exe")+"\""
-		MakeOutput("2", runCMD)
-		RunShell(runCMD)
+	if termFlag == "-rg" || termFlag == "--rungamma" {
+		MakeOutput("2", rungammaCMD)
+		RunShell(rungammaCMD)
 	}
 }
