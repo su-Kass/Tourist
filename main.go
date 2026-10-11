@@ -60,7 +60,7 @@ func main() {
 		var exeDir = filepath.Join(data.CurDir, "ModdedExecutables")
 		var exeZipName, err3 = SearchForFiletype(exeDir, "zip")
 		var addExecutables bool = true
-		ErrHandle(err3, true)
+		ErrHandle(err3, false)
 		if err3 != nil {
 			TalkCat("modded exes not located, skipping install")
 			addExecutables = false
