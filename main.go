@@ -118,11 +118,13 @@ func main() {
 
 			var gammaLauncher string = filepath.Join(data.CurDir, "gamma-launcher")
 			TalkCat("downloading gamma-launcher from github")
-			RunShell("curl -fL -o "+gammaLauncher+" \"https://github.com/Mord3rca/gamma-launcher/releases/download/v3.1/gamma-launcher\"")
+			RunShell("curl -fL -o \""+gammaLauncher+"\" \"https://github.com/Mord3rca/gamma-launcher/releases/download/v3.1/gamma-launcher\"")
+			RunShell("chmod +x \""+gammaLauncher+"\"")
+
 			TalkCat("adding gamma to Anomaly using gamma-launcher")
-			RunShell(gammaLauncher+" full-install --anomaly "+"'"+anomalyPrefixDir+"'"+" --gamma "+"'"+gammaPrefixDir+"'")
+			RunShell("\""+gammaLauncher+"\" full-install --anomaly \""+anomalyPrefixDir+"\" --gamma \""+gammaPrefixDir+"\"")
 			TalkCat("verifying md5")
-			RunShell(gammaLauncher+" check-md5 --gamma "+"'"+gammaPrefixDir+"'")
+			RunShell("\""+gammaLauncher+"\" check-md5 --gamma \""+gammaPrefixDir+"\"")
 		}
 		TalkCat("Welcome to the zone stalker!")
 		TalkCat("run with '-ra' or '--runanomaly' to run anomaly")
